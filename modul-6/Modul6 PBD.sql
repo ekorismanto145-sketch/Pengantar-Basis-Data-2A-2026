@@ -70,6 +70,31 @@ INSERT INTO Mata_Kuliah VALUES
 ('MK06', 'Kecerdasan Buatan', 3, 4), 
 ('MK07', 'Data Mining', 2, 5);
 
+INSERT INTO krs VALUES
+(1, '21001', 'MK01', 1),
+(2, '21001', 'MK01', 1),
+(3, '21001', 'MK01', 2),
+(4, '21002', 'MK01', 2),
+(5, '21001', 'MK01', 1),
+(6, '21002', 'MK01', 3),
+(7, '21001', 'MK01', 1),
+(8, '21002', 'MK01', 2),
+(9, '21003', 'MK01', 3),
+(10, '21001', 'MK01', 2),
+(11, '21002', 'MK01', 3),
+(12, '21003', 'MK01', 1),
+(13, '21004', 'MK01', 2);
+
+INSERT INTO mahasiswa VALUES
+('24004', 'Mahasiswa Baru 2024', 2024, 'Teknik Informatika');
+INSERT IGNORE INTO mata_kuliah (kode_mk, nama_mk, sks) VALUES
+('MK01', 'Basis Data', 3);
+INSERT INTO krs  VALUES 
+(14, '24004', 'MK01', 2);
+
+SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 1;
+
 INSERT INTO Nilai VALUES 
 (1, '21001', 'MK01', 82, 'A'), 
 (2, '22001', 'MK01', 85, 'A'), 
@@ -129,3 +154,40 @@ JOIN Mata_Kuliah mk ON n.kode_mk = mk.kode_mk;
 SELECT * 
 FROM v_transkrip_lengkap
 WHERE nilai_huruf = 'A';
+
+
+SELECT COUNT(*) FROM mahasiswa WHERE angkatan = 2024;
+
+CREATE VIEW v_mahasiswa_aktif_2024 AS
+SELECT
+    m.nim, 
+    m.nama AS nama_mahasiswa, 
+    mk.nama_mk, 
+    k.semester, 
+    n.nilai_huruf
+FROM mahasiswa m
+JOIN krs k ON m.nim = k.nim
+JOIN mata_kuliah mk ON k.kode_mk = mk.kode_mk
+JOIN nilai n ON n.kode_mk = mk.kode_mk;
+
+
+SELECT * FROM v_mahasiswa_aktif_2024
+WHERE nim LIKE '24%';
+
+DROP VIEW IF EXISTS v_mahasiswa_aktif_2024;
+
+CREATE VIEW transkrip_lengkap AS
+SELECT 
+    m.nama AS nama_mahasiswa, 
+    m.jurusan, 
+    mk.nama_mk, 
+    mk.sks, 
+    n.nilai_angka, 
+    n.nilai_huruf, 
+    d.nama_dosen
+FROM Mahasiswa m
+JOIN Nilai n ON m.nim = n.nim
+JOIN Mata_Kuliah mk ON n.kode_mk = mk.kode_mk
+JOIN Dosen d ON mk.id_dosen = d.id_dosen;
+
+SELECT * FROM transkrip_lengkap;
